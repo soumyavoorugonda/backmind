@@ -44,9 +44,18 @@ public class ResurfacingEvent {
     }
 
     public ResurfacingEvent(Note note, User user, ResurfacingReason reason) {
+        this(note, user, reason, Instant.now());
+    }
+
+    public ResurfacingEvent(
+            Note note,
+            User user,
+            ResurfacingReason reason,
+            Instant shownAt
+    ) {
         this.note = note;
         this.user = user;
         this.reason = reason;
-        this.shownAt = Instant.now();
+        this.shownAt = shownAt;
     }
 }

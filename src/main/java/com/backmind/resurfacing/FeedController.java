@@ -1,7 +1,7 @@
 package com.backmind.resurfacing;
 
 import com.backmind.note.dto.NoteResponse;
-import com.backmind.user.entity.User;
+import com.backmind.auth.AuthenticatedUser;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,12 +20,12 @@ public class FeedController {
     }
 
     @GetMapping("/today")
-    public List<NoteResponse> today(@AuthenticationPrincipal User user) {
-        return resurfacingService.today(user);
+    public List<NoteResponse> today(@AuthenticationPrincipal AuthenticatedUser user) {
+        return resurfacingService.today(user.id());
     }
 
     @GetMapping("/lost")
-    public List<NoteResponse> lost(@AuthenticationPrincipal User user) {
-        return resurfacingService.lost(user);
+    public List<NoteResponse> lost(@AuthenticationPrincipal AuthenticatedUser user) {
+        return resurfacingService.lost(user.id());
     }
 }

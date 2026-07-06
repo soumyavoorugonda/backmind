@@ -10,6 +10,7 @@ import com.backmind.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Service
 public class AuthService {
@@ -30,10 +31,22 @@ public class AuthService {
 
     @Transactional
     public SignupResponse signup(SignupRequest request) {
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new EmailAlreadyRegisteredException();
+        }
+
         var user = new User(request.email(), passwordEncoder.encode(request.password()));
-        var savedUser = userRepository.saveAndFlush(user);
+        var savedUser = saveNewUser(user);
 
         return new SignupResponse(savedUser.getId(), savedUser.getEmail());
+    }
+
+    private User saveNewUser(User user) {
+        try {
+            return userRepository.saveAndFlush(user);
+        } catch (DataIntegrityViolationException exception) {
+            throw new EmailAlreadyRegisteredException();
+        }
     }
 
     @Transactional(readOnly = true)
@@ -48,8 +61,8 @@ public class AuthService {
         return new LoginResponse(jwtService.issueToken(user));
     }
 
-    public CurrentUserResponse me(User user) {
-        return new CurrentUserResponse(user.getId(), user.getEmail());
+    public CurrentUserResponse me(AuthenticatedUser user) {
+        return new CurrentUserResponse(user.id(), user.email());
     }
 
     public void logout() {

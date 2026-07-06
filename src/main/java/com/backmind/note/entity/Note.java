@@ -69,7 +69,10 @@ public class Note {
     }
 
     public Note(User user, String content, String category) {
-        var now = Instant.now();
+        this(user, content, category, Instant.now());
+    }
+
+    public Note(User user, String content, String category, Instant now) {
         this.user = user;
         this.content = content;
         this.category = category;
@@ -132,18 +135,29 @@ public class Note {
     }
 
     public void update(String content, String category) {
+        update(content, category, Instant.now());
+    }
+
+    public void update(String content, String category, Instant now) {
         this.content = content;
         this.category = category;
-        this.updatedAt = Instant.now();
+        this.updatedAt = now;
     }
 
     public void softDelete() {
+        softDelete(Instant.now());
+    }
+
+    public void softDelete(Instant now) {
         this.status = NoteStatus.DELETED;
-        this.updatedAt = Instant.now();
+        this.updatedAt = now;
     }
 
     public void recordSuccessfulReview() {
-        var now = Instant.now();
+        recordSuccessfulReview(Instant.now());
+    }
+
+    public void recordSuccessfulReview(Instant now) {
         this.currentIntervalDays = nextReviewInterval(currentIntervalDays);
         this.lastSeenAt = now;
         this.nextReviewAt = now.plus(currentIntervalDays, ChronoUnit.DAYS);
@@ -151,7 +165,10 @@ public class Note {
     }
 
     public void recordForgottenReview() {
-        var now = Instant.now();
+        recordForgottenReview(Instant.now());
+    }
+
+    public void recordForgottenReview(Instant now) {
         this.currentIntervalDays = 1;
         this.lastSeenAt = now;
         this.nextReviewAt = now.plus(1, ChronoUnit.DAYS);
@@ -159,24 +176,38 @@ public class Note {
     }
 
     public void recordStillBelieveReview() {
-        recordSuccessfulReview();
+        recordStillBelieveReview(Instant.now());
+    }
+
+    public void recordStillBelieveReview(Instant now) {
+        recordSuccessfulReview(now);
         this.beliefStatus = BeliefStatus.STILL_BELIEVE;
     }
 
     public void recordNotUsefulReview() {
-        var now = Instant.now();
+        recordNotUsefulReview(Instant.now());
+    }
+
+    public void recordNotUsefulReview(Instant now) {
         this.status = NoteStatus.ARCHIVED;
         this.lastSeenAt = now;
         this.updatedAt = now;
     }
 
     public void recordNoLongerBelieveReview() {
-        recordNotUsefulReview();
+        recordNoLongerBelieveReview(Instant.now());
+    }
+
+    public void recordNoLongerBelieveReview(Instant now) {
+        recordNotUsefulReview(now);
         this.beliefStatus = BeliefStatus.NO_LONGER_BELIEVE;
     }
 
     public void recordSkippedReview() {
-        var now = Instant.now();
+        recordSkippedReview(Instant.now());
+    }
+
+    public void recordSkippedReview(Instant now) {
         this.lastSeenAt = now;
         this.updatedAt = now;
     }

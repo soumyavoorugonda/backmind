@@ -1,6 +1,7 @@
 package com.backmind.common.error;
 
 import com.backmind.auth.InvalidCredentialsException;
+import com.backmind.auth.EmailAlreadyRegisteredException;
 import com.backmind.note.NoteNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiError> handleInvalidCredentials(InvalidCredentialsException exception) {
         return response(HttpStatus.UNAUTHORIZED, exception.getMessage());
+    }
+
+    @ExceptionHandler(EmailAlreadyRegisteredException.class)
+    public ResponseEntity<ApiError> handleEmailAlreadyRegistered(
+            EmailAlreadyRegisteredException exception
+    ) {
+        return response(HttpStatus.CONFLICT, exception.getMessage());
     }
 
     @ExceptionHandler(NoteNotFoundException.class)

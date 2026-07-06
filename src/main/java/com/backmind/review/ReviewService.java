@@ -7,14 +7,18 @@ import com.backmind.review.dto.ReviewRequest;
 import com.backmind.review.entity.FeedbackType;
 import com.backmind.review.entity.NoteReview;
 import com.backmind.review.repository.NoteReviewRepository;
-import com.backmind.user.entity.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import java.time.Instant;
 
 @Service
 public class ReviewService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewService.class);
 
     private final NoteRepository noteRepository;
     private final NoteReviewRepository noteReviewRepository;
@@ -28,20 +32,29 @@ public class ReviewService {
     }
 
     @Transactional
-    public NoteResponse review(User user, UUID noteId, ReviewRequest request) {
-        var note = noteRepository.findByIdAndUserId(noteId, user.getId())
+    public NoteResponse review(UUID userId, UUID noteId, ReviewRequest request) {
+        var now = Instant.now();
+        var note = noteRepository.findByIdAndUserId(noteId, userId)
                 .orElseThrow(NoteNotFoundException::new);
 
         switch (request.feedbackType()) {
-            case USEFUL -> note.recordSuccessfulReview();
-            case FORGOT_THIS -> note.recordForgottenReview();
-            case STILL_BELIEVE -> note.recordStillBelieveReview();
-            case NOT_USEFUL -> note.recordNotUsefulReview();
-            case NO_LONGER_BELIEVE -> note.recordNoLongerBelieveReview();
-            case SKIPPED -> note.recordSkippedReview();
+            case USEFUL -> note.recordSuccessfulReview(now);
+            case FORGOT_THIS -> note.recordForgottenReview(now);
+            case STILL_BELIEVE -> note.recordStillBelieveReview(now);
+            case NOT_USEFUL -> note.recordNotUsefulReview(now);
+            case NO_LONGER_BELIEVE -> note.recordNoLongerBelieveReview(now);
+            case SKIPPED -> note.recordSkippedReview(now);
         }
         noteReviewRepository.saveAndFlush(
-                new NoteReview(note, user, request.feedbackType(), request.userResponse())
+                new NoteReview(
+                        note, note.getUser(), request.feedbackType(), request.userResponse(), now
+                )
+        );
+        LOGGER.info(
+                "Review completed userId={} noteId={} feedbackType={}",
+                userId,
+                noteId,
+                request.feedbackType()
         );
 
         return NoteResponse.from(note);

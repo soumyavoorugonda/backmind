@@ -3,7 +3,7 @@ package com.backmind.note;
 import com.backmind.note.dto.CreateNoteRequest;
 import com.backmind.note.dto.NoteResponse;
 import com.backmind.note.dto.UpdateNoteRequest;
-import com.backmind.user.entity.User;
+import com.backmind.auth.AuthenticatedUser;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,40 +33,40 @@ public class NoteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public NoteResponse create(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal AuthenticatedUser user,
             @Valid @RequestBody CreateNoteRequest request
     ) {
-        return noteService.create(user, request);
+        return noteService.create(user.id(), request);
     }
 
     @GetMapping
-    public List<NoteResponse> findAll(@AuthenticationPrincipal User user) {
-        return noteService.findAll(user);
+    public List<NoteResponse> findAll(@AuthenticationPrincipal AuthenticatedUser user) {
+        return noteService.findAll(user.id());
     }
 
     @GetMapping("/{id}")
     public NoteResponse findById(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable("id") UUID id
     ) {
-        return noteService.findById(user, id);
+        return noteService.findById(user.id(), id);
     }
 
     @PutMapping("/{id}")
     public NoteResponse update(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable("id") UUID id,
             @Valid @RequestBody UpdateNoteRequest request
     ) {
-        return noteService.update(user, id, request);
+        return noteService.update(user.id(), id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable("id") UUID id
     ) {
-        noteService.delete(user, id);
+        noteService.delete(user.id(), id);
     }
 }

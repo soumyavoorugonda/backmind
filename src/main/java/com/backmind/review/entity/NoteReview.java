@@ -47,9 +47,19 @@ public class NoteReview {
     }
 
     public NoteReview(Note note, User user, FeedbackType feedbackType, String userResponse) {
+        this(note, user, feedbackType, userResponse, Instant.now());
+    }
+
+    public NoteReview(
+            Note note,
+            User user,
+            FeedbackType feedbackType,
+            String userResponse,
+            Instant reviewedAt
+    ) {
         this.note = note;
         this.user = user;
-        this.reviewedAt = Instant.now();
+        this.reviewedAt = reviewedAt;
         this.feedbackType = feedbackType;
         this.userResponse = userResponse;
     }

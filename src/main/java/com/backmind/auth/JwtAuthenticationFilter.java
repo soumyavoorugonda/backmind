@@ -46,7 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             var userId = jwtService.extractUserId(token);
             userRepository.findById(userId).ifPresent(user -> {
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, List.of());
+                var principal = new AuthenticatedUser(user.getId(), user.getEmail());
+                var authentication = new UsernamePasswordAuthenticationToken(principal, null, List.of());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             });
         } catch (JwtException | IllegalArgumentException ignored) {

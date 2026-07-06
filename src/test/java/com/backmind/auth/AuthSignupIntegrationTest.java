@@ -51,4 +51,26 @@ class AuthSignupIntegrationTest {
                 .isNotEqualTo("correct-horse-battery-staple")
                 .startsWith("$2");
     }
+
+    @Test
+    void rejectsDuplicateEmailWithConflictResponse() throws Exception {
+        var signupRequest = """
+                {
+                  "email": "duplicate@example.com",
+                  "password": "correct-horse-battery-staple"
+                }
+                """;
+
+        mockMvc.perform(post("/api/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(signupRequest))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(signupRequest))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.message").value("Email is already registered"));
+    }
 }

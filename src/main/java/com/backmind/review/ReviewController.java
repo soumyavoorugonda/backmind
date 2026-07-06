@@ -1,8 +1,8 @@
 package com.backmind.review;
 
 import com.backmind.note.dto.NoteResponse;
+import com.backmind.auth.AuthenticatedUser;
 import com.backmind.review.dto.ReviewRequest;
-import com.backmind.user.entity.User;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +25,10 @@ public class ReviewController {
 
     @PostMapping
     public NoteResponse review(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable("id") UUID noteId,
             @Valid @RequestBody ReviewRequest request
     ) {
-        return reviewService.review(user, noteId, request);
+        return reviewService.review(user.id(), noteId, request);
     }
 }

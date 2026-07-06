@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import com.backmind.user.entity.User;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -38,7 +37,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public CurrentUserResponse me(@AuthenticationPrincipal User user) {
+    public CurrentUserResponse me(@AuthenticationPrincipal AuthenticatedUser user) {
         return authService.me(user);
     }
 
