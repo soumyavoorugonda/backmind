@@ -4,6 +4,7 @@
 Backmind is a personal learning-retention app that helps users remember things they forgot they learned.
 
 The app should feel like a private feed of the user’s own past knowledge, not like studying.
+
 ---
 
 ## Core Product Idea
@@ -219,15 +220,18 @@ Later
 
 ---
 ## Backend Modules
+
+```text
 backmind
-├── auth 
-├── user 
-├── note 
-├── review 
-├── resurfacing 
-├── notification 
-├── common 
+├── auth
+├── user
+├── note
+├── review
+├── resurfacing
+├── notification
+├── common
 └── config
+```
 
 Main services:
 
