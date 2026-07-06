@@ -43,7 +43,6 @@ public class ReviewService {
         noteReviewRepository.saveAndFlush(
                 new NoteReview(note, user, request.feedbackType(), request.userResponse())
         );
-        noteRepository.saveAndFlush(note);
 
         return NoteResponse.from(note);
     }

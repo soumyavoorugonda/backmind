@@ -1,11 +1,9 @@
 package com.backmind.resurfacing;
 
 import com.backmind.note.dto.NoteResponse;
-import com.backmind.note.entity.Note;
 import com.backmind.note.entity.NoteStatus;
 import com.backmind.note.repository.NoteRepository;
 import com.backmind.resurfacing.entity.ResurfacingEvent;
-import com.backmind.resurfacing.entity.ResurfacingReason;
 import com.backmind.resurfacing.repository.ResurfacingEventRepository;
 import com.backmind.user.entity.User;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @Service
 public class ResurfacingService {
 
+    private final FeedSelectionPolicy selectionPolicy = new FeedSelectionPolicy();
     private final NoteRepository noteRepository;
     private final ResurfacingEventRepository resurfacingEventRepository;
 
@@ -43,41 +41,30 @@ public class ResurfacingService {
                         PageRequest.of(0, 5)
                 );
 
-        var selections = new LinkedHashMap<Note, ResurfacingReason>();
-        dueNotes.stream().limit(3)
-                .forEach(note -> selections.put(note, ResurfacingReason.SPACED_REVIEW));
-        noteRepository
+        var lostNote = noteRepository
                 .findFirstByUserIdAndStatusAndLastSeenAtLessThanEqualOrderByLastSeenAtAsc(
                         user.getId(), NoteStatus.ACTIVE, lostCutoff
-                )
-                .filter(note -> !selections.containsKey(note))
-                .ifPresent(note -> selections.put(note, ResurfacingReason.LOST_KNOWLEDGE));
-        noteRepository
+                );
+        var olderNote = noteRepository
                 .findFirstByUserIdAndStatusAndCreatedAtLessThanEqualAndLastSeenAtGreaterThanAndNextReviewAtGreaterThanOrderByCreatedAtAsc(
                         user.getId(),
                         NoteStatus.ACTIVE,
                         now.minus(1, ChronoUnit.DAYS),
                         lostCutoff,
                         now
-                )
-                .filter(note -> !selections.containsKey(note))
-                .ifPresent(note -> selections.put(note, ResurfacingReason.RANDOM));
-
-        dueNotes.stream()
-                .skip(3)
-                .filter(note -> !selections.containsKey(note))
-                .limit(5 - selections.size())
-                .forEach(note -> selections.put(note, ResurfacingReason.SPACED_REVIEW));
+                );
+        var selections = selectionPolicy.select(dueNotes, lostNote, olderNote);
 
         resurfacingEventRepository.saveAllAndFlush(
-                selections.entrySet().stream()
+                selections.stream()
                         .map(selection -> new ResurfacingEvent(
-                                selection.getKey(), user, selection.getValue()
+                                selection.note(), user, selection.reason()
                         ))
                         .toList()
         );
 
-        return selections.keySet().stream()
+        return selections.stream()
+                .map(FeedSelectionPolicy.Selection::note)
                 .map(NoteResponse::from)
                 .toList();
     }

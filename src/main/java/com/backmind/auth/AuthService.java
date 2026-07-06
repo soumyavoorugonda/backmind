@@ -4,6 +4,7 @@ import com.backmind.auth.dto.SignupRequest;
 import com.backmind.auth.dto.SignupResponse;
 import com.backmind.auth.dto.LoginRequest;
 import com.backmind.auth.dto.LoginResponse;
+import com.backmind.auth.dto.CurrentUserResponse;
 import com.backmind.user.entity.User;
 import com.backmind.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,5 +46,13 @@ public class AuthService {
         }
 
         return new LoginResponse(jwtService.issueToken(user));
+    }
+
+    public CurrentUserResponse me(User user) {
+        return new CurrentUserResponse(user.getId(), user.getEmail());
+    }
+
+    public void logout() {
+        // JWT sessions are stateless; clients complete logout by discarding the token.
     }
 }

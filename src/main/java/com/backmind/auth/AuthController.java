@@ -4,6 +4,7 @@ import com.backmind.auth.dto.SignupRequest;
 import com.backmind.auth.dto.SignupResponse;
 import com.backmind.auth.dto.LoginRequest;
 import com.backmind.auth.dto.LoginResponse;
+import com.backmind.auth.dto.CurrentUserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,13 +38,13 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public SignupResponse me(@AuthenticationPrincipal User user) {
-        return new SignupResponse(user.getId(), user.getEmail());
+    public CurrentUserResponse me(@AuthenticationPrincipal User user) {
+        return authService.me(user);
     }
 
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout() {
-        // Stateless JWT logout is completed by the client discarding its token.
+        authService.logout();
     }
 }
