@@ -474,7 +474,7 @@ Build the frontend separately from the backend using React Native + Expo.
 - Implement signup, login, logout, token storage, session bootstrap, and route guards.
 
 ### Phase 3 - Core Screens
-- Implement home feed, create note, note review actions, and notification preferences screens.
+- Implement home feed, create note, note review actions, and my notes screens.
 
 ### Phase 4 - API Integration
 - Create a typed API client, connect auth and notes to the backend, and handle loading/error states.

@@ -14,7 +14,10 @@ public record UpdateNoteRequest(
         String content,
 
         @Size(max = 30, message = "Category must not exceed 30 characters")
-        @Pattern(regexp = "^[A-Za-z0-9]+$", message = "Category must be alphanumeric")
+        @Pattern(
+                regexp = "^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$",
+                message = "Category must contain only letters, numbers, and single spaces"
+        )
         String category
 ) {
 }

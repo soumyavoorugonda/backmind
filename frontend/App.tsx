@@ -1,11 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 
-import { RootNavigator } from './src/navigation/RootNavigator';
+import { AuthProvider } from './src/features/auth/AuthContext';
+import { SessionNavigator } from './src/navigation/SessionNavigator';
 
 export default function App() {
   return (
     <>
-      <RootNavigator />
+      <AuthProvider>
+        <SessionNavigator />
+      </AuthProvider>
       <StatusBar style="auto" />
     </>
   );

@@ -1,7 +1,11 @@
 export const colors = {
-  primary: '#315C4C',
-  primaryPressed: '#24483B',
-  surface: '#FFFFFF',
+  primary: '#436095',
+  primaryPressed: '#414c64',
+  surface: '#f4f6f6',
+  surfaceMuted: '#eef0f0',
+  text: '#17251F',
+  textMuted: '#5C6F67',
+  placeholder: '#91A19A',
   textOnPrimary: '#FFFFFF',
 } as const;
 
@@ -13,3 +17,4 @@ export const spacing = {
 export const radii = {
   medium: 12,
 } as const;
+

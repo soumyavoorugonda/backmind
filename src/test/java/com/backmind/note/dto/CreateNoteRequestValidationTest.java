@@ -56,7 +56,15 @@ class CreateNoteRequestValidationTest {
     @Test
     void acceptsValidContentWithAnOptionalCategory() {
         assertTrue(validator.validate(new CreateNoteRequest("A valid note", "Software2")).isEmpty());
+        assertTrue(validator.validate(new CreateNoteRequest("A valid note", "Physical activity")).isEmpty());
         assertTrue(validator.validate(new CreateNoteRequest("A valid note", null)).isEmpty());
+    }
+
+    @Test
+    void rejectsMalformedCategorySpacing() {
+        assertHasViolation(new CreateNoteRequest("A valid note", " Physical activity"), "category");
+        assertHasViolation(new CreateNoteRequest("A valid note", "Physical  activity"), "category");
+        assertHasViolation(new CreateNoteRequest("A valid note", "Physical activity "), "category");
     }
 
     private static void assertHasViolation(CreateNoteRequest request, String property) {

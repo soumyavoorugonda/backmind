@@ -1,8 +1,4 @@
-const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
-
-if (!apiBaseUrl) {
-  throw new Error('EXPO_PUBLIC_API_URL is required');
-}
+const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080';
 
 export const env = {
   apiBaseUrl,
